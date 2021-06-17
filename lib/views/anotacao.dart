@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:anota/inherited_widgets/anotacao_inherited_widgets.dart';
-import 'package:anota/db/anotacao_db.dart';
+
 
 enum AnotacaoModo {
   Editar,
@@ -11,7 +11,8 @@ enum AnotacaoModo {
 class Anotacao extends StatefulWidget{
   final AnotacaoModo anotacaoModo;
   final Map<String, dynamic> anotacao;
-  Anotacao(this.anotacaoModo, this.anotacao);
+  final String id;
+  Anotacao(this.anotacaoModo, this.anotacao, this.id);
 
   @override
   AnotacaoState createState(){ return new AnotacaoState(); }
@@ -22,16 +23,20 @@ class AnotacaoState extends State<Anotacao> {
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _textoController = TextEditingController();
   final TextEditingController _dataController = TextEditingController();
-  
-  List<Map<String, String>> get _anotacoes => AnotacaoInheritedWidget.of(context).anotacoes;
 
+ CollectionReference notadb;
+ @override
+  void initState(){
+    super.initState();
+    notadb = FirebaseFirestore.instance.collection('notas');
+  }
 
   @override
   void didChangeDependencies(){
     if (widget.anotacaoModo == AnotacaoModo.Editar){
       _tituloController.text = widget.anotacao['titulo'];
       _textoController.text = widget.anotacao['texto'];
-      _dataController.text = widget.anotacao['data'];
+      _dataController.text = widget.anotacao['data'].toString();
     }
 
     super.didChangeDependencies();
@@ -79,18 +84,24 @@ class AnotacaoState extends State<Anotacao> {
                       'data_edicao': DateTime.now(),
                       'status': 1
                     });*/
-                   _anotacoes.add({
-                     'titulo': titulo,
+                    var db = FirebaseFirestore.instance;
+                     db.collection('notas').add({
+                     'data': DateTime.now(),
                      'texto': texto,
-                     'data': 'Segunda-Feira 14:49'
+                     'titulo': titulo
                    });
+                    
+                   
                  }else if (widget?.anotacaoModo == AnotacaoModo.Editar){
                    //_anotacoes.insert(widget.anotacao['id'],'titulo': _tituloController);
-                   AnotacaoDB.updateAnotacao({
-                     'id': widget.anotacao['id'],
-                     'titulo': _tituloController,
-                     'texto': _textoController
+                    var db = FirebaseFirestore.instance;
+                      db.collection('notas').
+                      add({
+                     'data': DateTime.now(),
+                     'texto': texto,
+                     'titulo': titulo
                    });
+                   notadb.doc(widget.id).delete();
                  }
                  Navigator.pop(context);
                }),
@@ -104,7 +115,7 @@ class AnotacaoState extends State<Anotacao> {
                    padding: const EdgeInsets.only(left: 2.0),
                    child: _AnotacaoButton('Apagar', Colors.red, () async{
                      //_anotacoes.removeAt(widget.index);
-                     await AnotacaoDB.apagarAnotacao(widget.anotacao['id']);
+                     notadb.doc(widget.id).delete();
                      Navigator.pop(context);
                    })
                  ) : Container()

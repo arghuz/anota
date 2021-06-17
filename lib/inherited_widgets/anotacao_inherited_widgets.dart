@@ -25,7 +25,7 @@ class AnotacaoInheritedWidget extends InheritedWidget {
       'ID': '4',
       'titulo': 'titulo teste 4',
       'texto': 'texto teste 4',
-      'data': 'Sexta-Feira 22 às 16:40'
+      'data': 'Sexta-Feira 29 às 16:40'
     }
   ];
 

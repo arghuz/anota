@@ -1,4 +1,5 @@
 import 'package:anota/views/sobre.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class _State extends State<SignPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController nameControllerC = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,13 +98,14 @@ class _State extends State<SignPage> {
                     child: ElevatedButton(style: TextButton.styleFrom(primary: Colors.white,backgroundColor: Colors.blue) ,
                       child: Text('Salvar'),
                       onPressed: () {
-                         if (nameController.text == nameControllerC.text ){
-                              Navigator.pop(context);
-                              print(nameController.text);
-                              print(passwordController.text);
+                         if (nameController.text.isEmpty && nameControllerC.text.isEmpty &&  passwordController.text.isEmpty){
+                             _showMyDialog(context,'Insira uma Senha ou Usuario valido ','Tente Novamente');
                             }
-                          else{
-                            _showMyDialog(context,'Insira uma Senha ou Usuario valido ','Tente Novamente');
+                          else if (passwordController.text.length > 6 ){
+                             setState(() {
+                              isLoading = true;
+                             });
+                              login(nameController.text, passwordController.text);
                           }
                       },
                     )
@@ -125,4 +127,33 @@ class _State extends State<SignPage> {
               ],
             )));
   }
+    void login(email, senha) {
+    FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: nameController.text, password: passwordController.text)
+            .then((res) {
+
+        isLoading = false;
+        Navigator.pushReplacementNamed(context, '/principal');
+
+    }).catchError((erro){
+      var mensagem = '';
+      if (erro.code == 'user-not-found'){
+        mensagem = 'ERRO: Usuário não encontrado';
+      }else if (erro.code == 'wrong-password'){
+        mensagem = 'ERRO: Senha incorreta';
+      }else if ( erro.code == 'invalid-email'){
+        mensagem = 'ERRO: Email inválido';
+      }else{
+        mensagem = erro.message;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$mensagem'),
+            duration: Duration(seconds:2)
+          )
+      );
+
+    });
+}
 }

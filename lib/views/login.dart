@@ -1,7 +1,26 @@
-import 'package:anota/views/anotacoes_list.dart';
+import 'package:anota/views/anotacoes_fire.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'cadastro.dart';
+
+
+Future<void> banco() async {
+
+  //Inicializar o FIRESTORE
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  var db = FirebaseFirestore.instance;
+   db.collection('Notas-177f8').add(
+    {
+     'titulo': 'titulo teste 1',
+     'texto': 'texto teste 1',
+     'data': 'Sexta-Feira 777 às 16:40'
+    }
+  );
+}
 
 Future<void> _showMyDialog(BuildContext context, String texto1, String texto2, [String texto3]) async {
   return showDialog<void>(
@@ -39,7 +58,7 @@ class LoginPage extends StatefulWidget {
 class _State extends State<LoginPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,6 +114,7 @@ class _State extends State<LoginPage> {
                 ),
                 FlatButton(
                   onPressed: (){
+                    
                     _showMyDialog(context,'Peça aos Adminstradores para mudar sua senha','para continuar usando Anote!','Fechar');
                   },
                   textColor: Colors.blue,
@@ -106,16 +126,10 @@ class _State extends State<LoginPage> {
                     child: ElevatedButton(style: TextButton.styleFrom(primary: Colors.white,backgroundColor: Colors.blue) ,
                       child: Text('Login'),
                       onPressed: () {
-                        if (nameController.text == 'aaa' && passwordController.text == 'aaa'){
-                          Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>  AnotacoesList())
-                          );
-                        }else{
-                          _showMyDialog(context,'Senha Incorreta ou Usuario','Tente Novamente');
-                        }
-                        print(nameController.text);
-                        print(passwordController.text);
+                        setState(() {
+                        isLoading = true;
+                        });
+                          login(nameController.text, passwordController.text);                       
                       },
                     )
                     ),
@@ -142,4 +156,40 @@ class _State extends State<LoginPage> {
               ],
             )));
   }
+   //
+  // LOGIN com Firebase Auth
+  //
+  void login(email, senha) {
+    
+    FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email, password: senha).then((resultado) {
+
+        isLoading = false;
+        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>  TelaPrincipal())
+                          );
+
+    }).catchError((erro){
+      var mensagem = '';
+      if (erro.code == 'user-not-found'){
+        _showMyDialog(context,'user-not-found','Tente Novamente');
+      }else if (erro.code == 'wrong-password'){
+        _showMyDialog(context,'Senha Incorreta ou Usuario','Tente Novamente');
+      }else if ( erro.code == 'invalid-email'){
+        _showMyDialog(context,'invalid-email','Tente Novamente');
+      }else{
+        mensagem = erro.message;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$mensagem'),
+            duration: Duration(seconds:2)
+          )
+      );
+
+    });
 }
+}
+
