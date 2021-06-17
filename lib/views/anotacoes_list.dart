@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:anota/inherited_widgets/anotacao_inherited_widgets.dart';
 import 'package:anota/views/anotacao.dart';
 import 'package:anota/db/anotacao_db.dart';
 
@@ -44,13 +43,14 @@ class AnotacoesListState extends State<AnotacoesList> {
                   'data': 'Sexta-Feira 22 às 16:40'
                 }
              ];
+             
               return ListView.builder(
                 itemBuilder: (context, index){
                   return GestureDetector(
                     onTap: (){
                       Navigator.push(
                         context,
-                          MaterialPageRoute(builder: (context) => Anotacao(AnotacaoModo.Editar, anotacoes[index]))
+                          MaterialPageRoute(builder: (context) => Anotacao(AnotacaoModo.Editar, anotacoes[index],null))
                       );
                     },
                     child: Card(
@@ -79,7 +79,7 @@ class AnotacoesListState extends State<AnotacoesList> {
           onPressed: (){
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Anotacao(AnotacaoModo.Nova, null))
+                MaterialPageRoute(builder: (context) => Anotacao(AnotacaoModo.Nova, null,null))
             );
           },
           child: Icon(Icons.add),

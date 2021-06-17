@@ -1,5 +1,32 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+class Notas{
+
+  //Atributos = campos do documento
+   String data;
+   String texto;
+   String titulo;
+
+  //Construtor
+  Notas(this.data,this.texto,this.titulo);
+
+  //Converter um DOCUMENTO em um OBJETO  
+  Notas.fromJson( Map<String,dynamic> mapa, String data){
+    this.data = data;
+    this.texto = mapa['texto'];
+    this.titulo = mapa['titulo'];
+  }
+
+  //Converter um OBJETO em um DOCUMENTO
+  Map<String,dynamic> toJSon(){
+    return{
+      'id'   : this.data,
+      'nome' : this.texto,
+      'preco': this.titulo
+    };
+  }
+
+}
 
 class AnotacaoDB {
 

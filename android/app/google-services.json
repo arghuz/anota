@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "343514786741",
+    "project_id": "notas-177f8",
+    "storage_bucket": "notas-177f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:343514786741:android:366b58a6a19df94fc587fc",
+        "android_client_info": {
+          "package_name": "com.example.anota"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "343514786741-mjoi8fdfbdbpkvm359rh0t249mnb6nvd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCxHOqXFfa61qelJO2J1RN3dNLSppQJ7o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "343514786741-mjoi8fdfbdbpkvm359rh0t249mnb6nvd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
